@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
-	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+<mule xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd">
 	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="04deff35-0f69-47b9-9848-8fcdc0ff9e17" basePath="/api" >
 		<http:listener-connection host="0.0.0.0" port="8081" />
 	</http:listener-config>
@@ -11,7 +12,21 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 		<http:listener doc:name="Listener" doc:id="aa678324-605e-4deb-b71a-93bd27eb82c0" config-ref="HTTP_Listener_config" path="/hello"/>
 		<logger level="INFO" doc:name="Logger" doc:id="b85bf5ed-c8a9-4e77-bd3d-3d2125ceb1b6" message="request received"/>
 		<set-variable value="#[message.attributes.queryParams.name]" doc:name="Set Variable" doc:id="da285171-df37-42ba-8a56-fcf261445ac2" variableName="uname"/>
-		<set-payload value='#["Hello" ++" " ++ vars.uname ++"." ++"Your age:" ++ message.attributes.headers.age]' doc:name="Set Payload" doc:id="bac58bd8-da06-4c76-b2fe-a17c1b58e8f3" />
 		<remove-variable doc:name="Remove Variable" doc:id="cbbe3c48-f68c-4d66-9084-1c4291b2060b" variableName="uname"/>
+		<logger level="INFO" doc:name="Logger" doc:id="58c0c7cd-585b-46d2-b15d-6266edb715f3" message="Removed variable"/>
+		<choice doc:name="Choice" doc:id="38beb29e-1f61-42e4-a24c-2fb876235ab6" >
+			<when expression="sizeOf(payload)&gt;2">
+				<logger level="INFO" doc:name="Payload size &gt;2 " doc:id="2a54b3a7-c09b-4fec-a3bb-5be54ccf516c" />
+				<set-payload value='#["Payload size is greater than 2"]' doc:name="Set Payload" doc:id="9f491a0e-419a-4ef0-b172-3848cef7c373" />
+			</when>
+			<when expression="sizeOf(payload)&gt;1">
+				<logger level="INFO" doc:name="Payload size &gt;1" doc:id="892a6cd0-7480-4367-8fd7-2954f44873e3" message="#[vars]"/>
+				<set-payload value='#["Pay load size is greater than 1"]' doc:name="Set Payload" doc:id="b8850428-98db-447e-851f-67599fe0083c" />
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Payload size&lt;=2 " doc:id="49c6ba2a-673c-4c1b-8b85-ca88ff469682" />
+				<set-payload value='#["Payload size is less than or equal to 2"]' doc:name="Set Payload" doc:id="b10a1acb-1a1b-455a-aa8b-ccbf7ed074c4" />
+			</otherwise>
+		</choice>
 	</flow>
 </mule>
