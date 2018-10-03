@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="04deff35-0f69-47b9-9848-8fcdc0ff9e17" basePath="/api" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="testFlow" doc:id="e82163d1-47ed-45e2-a9db-0761185c4864" >
+		<http:listener doc:name="Listener" doc:id="aa678324-605e-4deb-b71a-93bd27eb82c0" config-ref="HTTP_Listener_config" path="/hello"/>
+		<logger level="INFO" doc:name="Logger" doc:id="b85bf5ed-c8a9-4e77-bd3d-3d2125ceb1b6" message="request received"/>
+		<set-variable value="#[message.attributes.queryParams.name]" doc:name="Set Variable" doc:id="da285171-df37-42ba-8a56-fcf261445ac2" variableName="uname"/>
+		<set-payload value='#["Hello" ++" " ++ vars.uname ++"." ++"Your age:" ++ message.attributes.headers.age]' doc:name="Set Payload" doc:id="bac58bd8-da06-4c76-b2fe-a17c1b58e8f3" />
+		<remove-variable doc:name="Remove Variable" doc:id="cbbe3c48-f68c-4d66-9084-1c4291b2060b" variableName="uname"/>
+	</flow>
+</mule>
